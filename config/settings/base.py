@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'bank',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +85,8 @@ TEMPLATES = [
 
 STATIC_URL = '/static/'
 
+
+ATOMIC_REQUESTS = True
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 

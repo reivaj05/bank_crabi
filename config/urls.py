@@ -18,5 +18,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^app/', include('app.urls')),
+    url(r'^api/v0.1/bank/', include('bank.urls')),
 ]
