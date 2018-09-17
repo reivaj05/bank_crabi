@@ -40,7 +40,7 @@ class Transaction(BaseModel):
         verbose_name = "Transaction"
         verbose_name_plural = "Transactions"
 
-    account = models.ForeignKey(Account, related_name='transactions')
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
     ammount = models.FloatField()
     comments = models.TextField()
     transaction_type = models.CharField(choices=TRANSACTION_TYPES, default=TRANSFER, max_length=50)
@@ -52,8 +52,8 @@ class Transfer(BaseModel):
         verbose_name = "Transfer"
         verbose_name_plural = "Transfers"
 
-    sender = models.ForeignKey(Account, related_name='transfers_sent')
-    receiver = models.ForeignKey(Account, related_name='transfers_received')
+    sender = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name='transfers_sent')
+    receiver = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name='transfers_received')
     total = models.FloatField()
     comments = models.TextField()
 
@@ -72,7 +72,7 @@ class Authorization(BaseModel):
         verbose_name = "Authorization"
         verbose_name_plural = "Authorizations"
 
-    account = models.ForeignKey(Account, related_name='authorizations')
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='authorizations')
     total = models.FloatField()
     state = models.CharField(choices=STATES, default=LOCKED, max_length=50)
 
@@ -83,5 +83,5 @@ class Capture(BaseModel):
         verbose_name = "Capture"
         verbose_name_plural = "Captures"
 
-    account = models.ForeignKey(Account, related_name='captures')
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='captures')
     total = models.FloatField()
