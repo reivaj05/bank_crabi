@@ -1,9 +1,23 @@
 version: '3.2'
 
 services:
-  bank_crabi:
+  crabi:
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - "8000:8000"
+    links:
+      - db:db
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}

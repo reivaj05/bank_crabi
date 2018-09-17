@@ -3,3 +3,5 @@ djangorestframework
 coverage
 nose
 flake8
+psycopg2
+django-rest-auth
