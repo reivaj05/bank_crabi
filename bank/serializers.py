@@ -1,14 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer, CharField
 
-from .models import Account, Transaction, Authorization, Capture, Deposit
-
-
-class UserSerializer(ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('email', 'username', 'id', 'first_name', 'last_name')
+from .models import Account, Transaction, Authorization, Capture, Deposit, Transfer
 
 
 class AccountSerializer(ModelSerializer):
@@ -43,6 +36,13 @@ class DepositSerializer(ModelSerializer):
 
     class Meta:
         model = Deposit
+        exclude = ('id',)
+
+
+class TransferSerializer(ModelSerializer):
+
+    class Meta:
+        model = Transfer
         exclude = ('id',)
 
 

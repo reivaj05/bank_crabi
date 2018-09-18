@@ -30,10 +30,12 @@ class Transaction(BaseModel):
     TRANSFER = 'Transfer'
     AUTHORIZATION = 'Authorization'
     CAPTURE = 'Capture'
+    DEPOSIT = 'Deposit'
     TRANSACTION_TYPES = (
         (TRANSFER, TRANSFER),
         (AUTHORIZATION, AUTHORIZATION),
-        (CAPTURE, CAPTURE)
+        (CAPTURE, CAPTURE),
+        (DEPOSIT, DEPOSIT)
     )
 
     class Meta:
@@ -41,7 +43,7 @@ class Transaction(BaseModel):
         verbose_name_plural = "Transactions"
 
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
-    ammount = models.FloatField()
+    total = models.FloatField()
     comments = models.TextField()
     transaction_type = models.CharField(choices=TRANSACTION_TYPES, default=TRANSFER, max_length=50)
 
@@ -52,8 +54,8 @@ class Deposit(models.Model):
         verbose_name = "Deposit"
         verbose_name_plural = "Deposits"
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='deposits')
-    ammount = models.FloatField()
+    account = models.ForeignKey(Account, to_field='eid', on_delete=models.CASCADE, related_name='deposits')
+    total = models.FloatField()
 
 
 class Transfer(BaseModel):
@@ -62,8 +64,10 @@ class Transfer(BaseModel):
         verbose_name = "Transfer"
         verbose_name_plural = "Transfers"
 
-    sender = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name='transfers_sent')
-    receiver = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name='transfers_received')
+    sender = models.ForeignKey(Account, to_field='eid', null=True,
+        on_delete=models.SET_NULL, related_name='transfers_sent')
+    receiver = models.ForeignKey(Account, to_field='eid', null=True,
+        on_delete=models.SET_NULL, related_name='transfers_received')
     total = models.FloatField()
     comments = models.TextField()
 
@@ -82,7 +86,7 @@ class Authorization(BaseModel):
         verbose_name = "Authorization"
         verbose_name_plural = "Authorizations"
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='authorizations')
+    account = models.ForeignKey(Account, to_field='eid', on_delete=models.CASCADE, related_name='authorizations')
     total = models.FloatField()
     state = models.CharField(choices=STATES, default=LOCKED, max_length=50)
 
@@ -93,5 +97,5 @@ class Capture(BaseModel):
         verbose_name = "Capture"
         verbose_name_plural = "Captures"
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='captures')
+    account = models.ForeignKey(Account, to_field='eid', on_delete=models.CASCADE, related_name='captures')
     total = models.FloatField()

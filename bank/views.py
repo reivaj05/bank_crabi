@@ -2,11 +2,27 @@ from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
 
 
-from .models import Account, Transaction, Authorization, Capture, Deposit
+from .models import Account, Transaction, Authorization, Capture, Deposit, Transfer
 from .serializers import (
     AccountSerializer, TransactionSerializer, AuthorizationSerializer,
-    CaptureSerializer, DepositSerializer, UserSerializer
+    CaptureSerializer, DepositSerializer, UserSerializer, TransferSerializer
 )
+
+
+class RegisterTransactionMixin():
+    transaction_type = None
+    add_operation = True
+
+    def perform_create(self, serializer):
+        data = serializer.validated_data
+        account = data['account']
+        if self.add_operation:
+            account.balance += data['total']
+        else:
+            account.balance -= data['total']
+        account.save()
+        Transaction.objects.create(account=account, total=data['total'], transaction_type=self.transaction_type)
+        serializer.save()
 
 
 class AccountsViewSet(ModelViewSet):
@@ -14,44 +30,40 @@ class AccountsViewSet(ModelViewSet):
     serializer_class = AccountSerializer
     lookup_field = 'eid'
 
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
-
 
 class TransactionsViewSet(ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     lookup_field = 'eid'
 
-    def get_queryset(self):
-        return self.queryset.filter(account__user=self.request.user)
 
-
-class AuthorizationsViewSet(ModelViewSet):
+class AuthorizationsViewSet(RegisterTransactionMixin, ModelViewSet):
     queryset = Authorization.objects.all()
     serializer_class = AuthorizationSerializer
     lookup_field = 'eid'
+    transaction_type = Transaction.AUTHORIZATION
+    add_operation = False
 
-    def get_queryset(self):
-        return self.queryset.filter(account__user=self.request.user)
 
-
-class CapturesViewSet(ModelViewSet):
+class CapturesViewSet(RegisterTransactionMixin, ModelViewSet):
     queryset = Capture.objects.all()
     serializer_class = CaptureSerializer
     lookup_field = 'eid'
-
-    def get_queryset(self):
-        return self.queryset.filter(account__user=self.request.user)
+    transaction_type = Transaction.CAPTURE
 
 
-class DepositsViewSet(ModelViewSet):
+class DepositsViewSet(RegisterTransactionMixin, ModelViewSet):
     queryset = Deposit.objects.all()
     serializer_class = DepositSerializer
     lookup_field = 'eid'
+    transaction_type = Transaction.DEPOSIT
 
-    def get_queryset(self):
-        return self.queryset.filter(account__user=self.request.user)
+
+class TransfersViewSet(ModelViewSet):
+    queryset = Transfer.objects.all()
+    serializer_class = TransferSerializer
+    lookup_field = 'eid'
+    transaction_type = Transaction.TRANSFER
 
 
 class UsersViewSet(ModelViewSet):
