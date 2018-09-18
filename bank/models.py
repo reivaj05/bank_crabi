@@ -22,7 +22,7 @@ class Account(BaseModel):
         verbose_name = "Account"
         verbose_name_plural = "Accounts"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts')
+    user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE, related_name='accounts')
     balance = models.FloatField(default=0.0)
 
 
@@ -44,7 +44,7 @@ class Transaction(BaseModel):
 
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
     total = models.FloatField()
-    comments = models.TextField()
+    comments = models.TextField(blank=True)
     transaction_type = models.CharField(choices=TRANSACTION_TYPES, default=TRANSFER, max_length=50)
 
 
@@ -69,7 +69,7 @@ class Transfer(BaseModel):
     receiver = models.ForeignKey(Account, to_field='eid', null=True,
         on_delete=models.SET_NULL, related_name='transfers_received')
     total = models.FloatField()
-    comments = models.TextField()
+    comments = models.TextField(blank=True)
 
 
 class Authorization(BaseModel):

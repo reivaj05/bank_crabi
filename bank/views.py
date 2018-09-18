@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.response import Response
 
 
 from .models import Account, Transaction, Authorization, Capture, Deposit, Transfer
@@ -64,6 +65,29 @@ class TransfersViewSet(ModelViewSet):
     serializer_class = TransferSerializer
     lookup_field = 'eid'
     transaction_type = Transaction.TRANSFER
+
+    def create(self, request, *args, **kwargs):
+        if self.__validate_request(request):
+            return super(TransfersViewSet, self).create(request, *args, **kwargs)
+        else:
+            return Response('No money enough', status=400)
+
+    def __validate_request(self, request):
+        sender = Account.objects.get(eid=request.data['sender'])
+        receiver = Account.objects.get(eid=request.data['receiver'])
+        total = request.data['total']
+        if sender.balance < total:
+            return False
+        self.__update_accounts(sender, receiver, total)
+        return True
+
+    def __update_accounts(self, sender, receiver, total):
+        sender.balance -= total
+        receiver.balance += total
+        sender.save()
+        receiver.save()
+        Transaction.objects.create(account=sender, total=total, transaction_type=self.transaction_type)
+        Transaction.objects.create(account=receiver, total=total, transaction_type=self.transaction_type)
 
 
 class UsersViewSet(ModelViewSet):
