@@ -14,11 +14,17 @@ class AccountsViewSet(ModelViewSet):
     serializer_class = AccountSerializer
     lookup_field = 'eid'
 
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
 
 class TransactionsViewSet(ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     lookup_field = 'eid'
+
+    def get_queryset(self):
+        return self.queryset.filter(account__user=self.request.user)
 
 
 class AuthorizationsViewSet(ModelViewSet):
@@ -26,17 +32,26 @@ class AuthorizationsViewSet(ModelViewSet):
     serializer_class = AuthorizationSerializer
     lookup_field = 'eid'
 
+    def get_queryset(self):
+        return self.queryset.filter(account__user=self.request.user)
+
 
 class CapturesViewSet(ModelViewSet):
     queryset = Capture.objects.all()
     serializer_class = CaptureSerializer
     lookup_field = 'eid'
 
+    def get_queryset(self):
+        return self.queryset.filter(account__user=self.request.user)
+
 
 class DepositsViewSet(ModelViewSet):
     queryset = Deposit.objects.all()
     serializer_class = DepositSerializer
     lookup_field = 'eid'
+
+    def get_queryset(self):
+        return self.queryset.filter(account__user=self.request.user)
 
 
 class UsersViewSet(ModelViewSet):

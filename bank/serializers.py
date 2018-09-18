@@ -12,7 +12,6 @@ class UserSerializer(ModelSerializer):
 
 
 class AccountSerializer(ModelSerializer):
-    user = UserSerializer()
 
     class Meta:
         model = Account
@@ -48,7 +47,7 @@ class DepositSerializer(ModelSerializer):
 
 
 class UserSerializer(ModelSerializer):
-    # password = CharField(write_only=True)
+    password = CharField(write_only=True)
 
     class Meta:
         model = User
