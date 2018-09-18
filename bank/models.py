@@ -46,6 +46,16 @@ class Transaction(BaseModel):
     transaction_type = models.CharField(choices=TRANSACTION_TYPES, default=TRANSFER, max_length=50)
 
 
+class Deposit(models.Model):
+
+    class Meta:
+        verbose_name = "Deposit"
+        verbose_name_plural = "Deposits"
+
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='deposits')
+    ammount = models.FloatField()
+
+
 class Transfer(BaseModel):
 
     class Meta:
