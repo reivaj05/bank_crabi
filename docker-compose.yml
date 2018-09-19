@@ -2,9 +2,10 @@ version: '3.2'
 
 services:
   crabi:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: ./Dockerfile
+    image: javiersv05/bank_crabi
     ports:
       - "8000:8000"
     links:
